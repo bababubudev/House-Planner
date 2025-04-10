@@ -3,9 +3,11 @@
 
 #include "commandmanager.h"
 #include "project.h"
+#include <QKeyEvent>
+#include <QMouseEvent>
+#include <QPaintEvent>
 #include <QRubberBand>
 #include <QWidget>
-
 
 enum class ToolMode {
     Select,
@@ -40,7 +42,7 @@ public:
     void cutSelectedFurniture();
     void pasteFurniture();
 
-    void rotateFurniture();
+    void rotateFurniture(qreal angle);
 
 public slots:
     void newProject(Project::HouseSize size);
