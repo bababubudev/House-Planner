@@ -111,5 +111,26 @@ private:
     Wall m_deletedWall;
 };
 
+class DeleteSelectionCommand: public Command {
+public:
+    DeleteSelectionCommand(QList<Furniture*> &furnitureList, const QList<Furniture*> &selectedFurniture,
+                           QList<Wall> &wallList, const QList<int> &selectedWallIndices);
+
+    ~DeleteSelectionCommand();
+
+    void execute() override;
+    void undo() override;
+    void redo() override;
+
+private:
+    QList<Furniture*> &m_furnitureList;
+    QList<Furniture*> m_deletedItems;
+    QList<int> m_itemIndices;
+
+    QList<Wall> &m_wallList;
+    QList<Wall> m_deletedWalls;
+    QList<int> m_wallIndices;
+};
+
 
 #endif // COMMAND_H

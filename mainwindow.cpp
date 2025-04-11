@@ -144,9 +144,9 @@ void MainWindow::pasteFurniture()
     updateActions();
 }
 
-void MainWindow::deleteSelectedFurniture()
+void MainWindow::deleteSelection()
 {
-    m_designArea->deleteFurniture();
+    m_designArea->deleteSelection();
     m_projectModified = true;
 
     updateStatusBar();
@@ -290,7 +290,7 @@ void MainWindow::createActions()
     m_newMediumAction->setShortcut(tr("Ctrl+Shift+M"));
     connect(m_newMediumAction, &QAction::triggered, this, &MainWindow::newMediumProject);
 
-    m_newLargeAction = new QAction(tr("New Large (800x800)"), this);
+    m_newLargeAction = new QAction(tr("New Large (800x600)"), this);
     m_newLargeAction->setShortcut(tr("Ctrl+Shift+L"));
     connect(m_newLargeAction, &QAction::triggered, this, &MainWindow::newLargeProject);
 
@@ -331,7 +331,8 @@ void MainWindow::createActions()
 
     m_deleteAction = new QAction(tr("&Delete"), this);
     m_deleteAction->setShortcut(tr("Delete"));
-    connect(m_deleteAction, &QAction::triggered, this, &MainWindow::deleteSelectedFurniture);
+    connect(m_deleteAction, &QAction::triggered, this, &MainWindow::deleteSelection);
+
 
     m_selectAllAction = new QAction(tr("Select &All"), this);
     m_selectAllAction->setShortcut(tr("Ctrl+A"));

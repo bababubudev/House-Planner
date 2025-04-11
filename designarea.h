@@ -34,9 +34,16 @@ public:
     QSize sizeHint() const override;
     QSize minimumSizeHint() const override;
 
+    void deleteSelection();
+
+    void clearWallSelection();
+    void deleteSelectedWall();
+    bool hasSelectedWall() const;
+
     void clearSelection();
     void selectAll();
     void deleteFurniture();
+    bool hasSelectedFurniture() const;
 
     void copySelectedFurniture();
     void cutSelectedFurniture();
@@ -69,6 +76,11 @@ private:
     bool m_isDrawingWall;
     QPoint m_wallStartPoint;
     QPoint m_wallEndPoint;
+    int getWallAt(const QPoint &position);
+    int selectedWallsCount() const;
+    bool isWallInRect(const Wall &wall, const QRect &rect);
+    QList<int> m_selectedWallIndices;
+    qreal calculatePointToLineDistance(const QPoint &point, const QLineF &line);
 
     bool m_isMovingFurniture;
     QList<Furniture*> m_selectedFurniture;
@@ -85,6 +97,7 @@ private:
 
     Furniture *createFurniture(FurnitureType type, const QPointF &position);
     Furniture *getFurnitureAt(const QPoint &position);
+
     QList<Furniture*> getFurnitureInRect(const QRect &rect);
     bool checkFurnitureCollision(const Furniture *furniture) const;
     void ensureFurnitureInsideCanvas(Furniture *furniture);

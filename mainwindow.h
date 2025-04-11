@@ -34,7 +34,7 @@ private slots:
     void cutSelectedFurniture();
     void copySelectedFurniture();
     void pasteFurniture();
-    void deleteSelectedFurniture();
+    void deleteSelection();
     void selectAll();
     void rotateFurnitureClockwise();
     void rotateFurnitureAntiClockwise();

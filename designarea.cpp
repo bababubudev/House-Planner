@@ -63,6 +63,22 @@ QSize DesignArea::minimumSizeHint() const
     return m_project.getCanvasSize();
 }
 
+void DesignArea::deleteSelection()
+{
+    if (m_selectedFurniture.isEmpty() && m_selectedWallIndices.isEmpty()) return;
+
+    m_commandManager.execute(new DeleteSelectionCommand(
+        m_project.furniture(), m_selectedFurniture,
+        m_project.walls(), m_selectedWallIndices
+    ));
+
+    m_selectedFurniture.clear();
+    m_selectedWallIndices.clear();
+
+    update();
+    emit projectModified();
+}
+
 void DesignArea::clearSelection()
 {
     for (Furniture *item : m_selectedFurniture) {
@@ -70,6 +86,7 @@ void DesignArea::clearSelection()
     }
 
     m_selectedFurniture.clear();
+    clearWallSelection();
     update();
 }
 
@@ -79,6 +96,10 @@ void DesignArea::selectAll()
     for (Furniture *item : m_project.furniture()) {
         item->setSelected(true);
         m_selectedFurniture.append(item);
+    }
+
+    for (int i = 0; i < m_project.walls().size(); ++i) {
+        m_selectedWallIndices.append(i);
     }
 
     update();
@@ -93,6 +114,11 @@ void DesignArea::deleteFurniture()
     m_commandManager.execute(new DeleteFurnitureCommand(m_project.furniture(), m_selectedFurniture));
     m_selectedFurniture.clear();
     update();
+}
+
+bool DesignArea::hasSelectedFurniture() const
+{
+    return !m_selectedFurniture.isEmpty();
 }
 
 void DesignArea::copySelectedFurniture()
@@ -185,6 +211,11 @@ void DesignArea::loadProject(const QString &filename)
 
     m_commandManager.clear();
     clearSelection();
+
+    for (Furniture *item : m_project.furniture()) {
+        item->setSelected(false);
+    }
+
     setFixedSize(m_project.getCanvasSize());
     update();
 }
@@ -193,6 +224,11 @@ void DesignArea::undo()
 {
     m_commandManager.undo();
     clearSelection();
+
+    for (Furniture *item : m_project.furniture()) {
+        item->setSelected(false);
+    }
+
     update();
 }
 
@@ -200,6 +236,11 @@ void DesignArea::redo()
 {
     m_commandManager.redo();
     clearSelection();
+
+    for (Furniture *item : m_project.furniture()) {
+        item->setSelected(false);
+    }
+
     update();
 }
 
@@ -214,16 +255,26 @@ void DesignArea::paintEvent(QPaintEvent *event)
 
     // Draw grid
     painter.setPen(QPen(QColor(230, 230, 230), 1, Qt::SolidLine));
-    const int gridSize = 20;
-    for (int x = 0; x < width(); ++x) {
+    const int gridSize = 10;
+    for (int x = 0; x < width(); x += gridSize) {
         painter.drawLine(x, 0, x, height());
     }
-    for (int y = 0; y < height(); ++y) {
-        painter.drawLine(0, y, y, width());
+    for (int y = 0; y < height(); y += gridSize) {
+        painter.drawLine(0, y, width(), y);
     }
 
+
     // Draw walls
-    for (const Wall &wall: m_project.walls()) {
+    for (int i = 0; i < m_project.walls().size(); ++i) {
+        const Wall &wall = m_project.walls()[i];
+
+        if (m_selectedWallIndices.contains(i)) {
+            painter.setPen(QPen(Qt::cyan, 5, Qt::SolidLine, Qt::RoundCap));
+        }
+        else {
+            painter.setPen(QPen(Qt::black, 5, Qt::SolidLine, Qt::RoundCap));
+        }
+
         wall.draw(painter);
     }
 
@@ -234,8 +285,13 @@ void DesignArea::paintEvent(QPaintEvent *event)
 
     // Draw wall creation
     if (m_isDrawingWall) {
+        painter.save();
+
+        painter.setOpacity(0.5);
         painter.setPen(QPen(Qt::black, 5, Qt::SolidLine, Qt::RoundCap));
         painter.drawLine(m_wallStartPoint, m_wallEndPoint);
+
+        painter.restore();
     }
 }
 
@@ -246,6 +302,7 @@ void DesignArea::mousePressEvent(QMouseEvent *event)
         case ToolMode::Select:
             {
                 Furniture *furniture = getFurnitureAt(event->pos());
+
                 if (furniture) {
                     m_isMovingFurniture = true;
                     m_lastMousePos = event->pos();
@@ -266,13 +323,33 @@ void DesignArea::mousePressEvent(QMouseEvent *event)
                     }
                 }
                 else {
-                    m_isSelecting = true;
-                    m_selectionStart = event->pos();
-                    m_rubberBand->setGeometry(QRect(m_selectionStart, QSize()));
-                    m_rubberBand->show();
+                    int wallIndex = getWallAt(event->pos());
 
-                    if (!(event->modifiers() & Qt::ControlModifier)) {
-                        clearSelection();
+                    if (wallIndex >= 0) {
+                        if (event->modifiers() & Qt::ControlModifier) {
+                            if (m_selectedWallIndices.contains(wallIndex)) {
+                                m_selectedWallIndices.removeOne(wallIndex);
+                            } else {
+                                m_selectedWallIndices.append(wallIndex);
+                            }
+                        }
+                        else {
+                            clearSelection();
+                            m_selectedWallIndices.clear();
+                            m_selectedWallIndices.append(wallIndex);
+                        }
+
+                        update();
+                    }
+                    else {
+                        m_isSelecting = true;
+                        m_selectionStart = event->pos();
+                        m_rubberBand->setGeometry(QRect(m_selectionStart, QSize()));
+                        m_rubberBand->show();
+
+                        if (!(event->modifiers() & Qt::ControlModifier)) {
+                            clearSelection();
+                        }
                     }
                 }
             }
@@ -345,6 +422,7 @@ void DesignArea::mousePressEvent(QMouseEvent *event)
         }
     }
 }
+
 void DesignArea::mouseMoveEvent(QMouseEvent *event)
 {
     if (m_isDrawingWall) {
@@ -463,6 +541,14 @@ void DesignArea::mouseReleaseEvent(QMouseEvent *event)
                         m_selectedFurniture.append(item);
                     }
                 }
+
+                for (int i = 0; i < m_project.walls().size(); ++i) {
+                    if (isWallInRect(m_project.walls()[i], selectionRect)) {
+                        if (!m_selectedWallIndices.contains(i)) {
+                            m_selectedWallIndices.append(i);
+                        }
+                    }
+                }
             }
 
             update();
@@ -474,7 +560,7 @@ void DesignArea::keyPressEvent(QKeyEvent *event)
 {
     switch (event->key()) {
     case Qt::Key_Delete:
-        deleteFurniture();
+        deleteSelection();
         break;
     case Qt::Key_A:
         if (event->modifiers() & Qt::ControlModifier) {
@@ -519,10 +605,95 @@ void DesignArea::keyPressEvent(QKeyEvent *event)
         break;
     case Qt::Key_Escape:
         clearSelection();
+        clearWallSelection();
         break;
     default:
         QWidget::keyPressEvent(event);
     }
+}
+
+int DesignArea::getWallAt(const QPoint &position)
+{
+    const int WALL_HIT_DISTANCE = 5;
+
+    for (int i = 0; i < m_project.walls().size(); ++i) {
+        const Wall &wall = m_project.walls()[i];
+        QLineF line(wall.startPoint(), wall.endPoint());
+
+        qreal distance = calculatePointToLineDistance(position, line);
+
+        if (distance <= WALL_HIT_DISTANCE) {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+void DesignArea::clearWallSelection() {
+    m_selectedWallIndices.clear();
+    update();
+}
+
+void DesignArea::deleteSelectedWall() {
+    if (m_selectedWallIndices.isEmpty()) return;
+
+    std::sort(m_selectedWallIndices.begin(), m_selectedWallIndices.end(), std::greater<int>());
+
+    for (int index : m_selectedWallIndices) {
+        if (index >= 0 && index < m_project.walls().size()) {
+            m_commandManager.execute(new DeleteWallCommand(m_project.walls(), index));
+        }
+    }
+
+    clearWallSelection();
+    update();
+
+    emit projectModified();
+}
+
+bool DesignArea::hasSelectedWall() const {
+    return !m_selectedWallIndices.isEmpty();
+}
+
+int DesignArea::selectedWallsCount() const
+{
+    return m_selectedWallIndices.size();
+}
+
+bool DesignArea::isWallInRect(const Wall &wall, const QRect &rect)
+{
+    if (rect.contains(wall.startPoint()) && rect.contains(wall.endPoint())) {
+        return true;
+    }
+
+    QLineF wallLine(wall.startPoint(), wall.endPoint());
+
+    QLineF rectTop(rect.topLeft(), rect.topRight());
+    QLineF rectRight(rect.topRight(), rect.bottomRight());
+    QLineF rectBottom(rect.bottomRight(), rect.bottomLeft());
+    QLineF rectLeft(rect.bottomLeft(), rect.topLeft());
+
+    QPointF intersection;
+    return wallLine.intersects(rectTop, &intersection) == QLineF::BoundedIntersection ||
+           wallLine.intersects(rectRight, &intersection) == QLineF::BoundedIntersection ||
+           wallLine.intersects(rectBottom, &intersection) == QLineF::BoundedIntersection ||
+           wallLine.intersects(rectLeft, &intersection) == QLineF::BoundedIntersection;
+}
+
+qreal DesignArea::calculatePointToLineDistance(const QPoint &point, const QLineF &line)
+{
+    qreal numerator = qAbs((line.y2() - line.y1()) * point.x() -
+                           (line.x2() - line.x1()) * point.y() +
+                           line.x2() * line.y1() - line.y2() * line.x1());
+    qreal denominator = qSqrt(qPow(line.y2() - line.y1(), 2) + qPow(line.x2() - line.x1(), 2));
+
+    // Line is a point
+    if (denominator == 0) {
+        return QLineF(line.p1(), point).length();
+    }
+
+    return numerator / denominator;
 }
 
 Furniture *DesignArea::createFurniture(FurnitureType type, const QPointF &position)

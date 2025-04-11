@@ -3,9 +3,7 @@
 
 Wall::Wall() : m_startPoint(0, 0), m_endPoint(0, 0) {}
 
-Wall::Wall(const QPoint &start, const QPoint &end): m_startPoint(start), m_endPoint(end)
-{
-}
+Wall::Wall(const QPoint &start, const QPoint &end): m_startPoint(start), m_endPoint(end) {}
 
 QPoint Wall::startPoint() const
 {
@@ -46,7 +44,6 @@ bool Wall::isVertical() const
 
 void Wall::draw(QPainter &painter) const
 {
-    painter.setPen(QPen(Qt::black, 5, Qt::SolidLine, Qt::RoundCap));
     painter.drawLine(m_startPoint, m_endPoint);
 }
 

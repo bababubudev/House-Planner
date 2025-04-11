@@ -186,3 +186,65 @@ void DeleteWallCommand::redo()
 {
     execute();
 }
+
+DeleteSelectionCommand::DeleteSelectionCommand(QList<Furniture *> &furnitureList, const QList<Furniture*> &selectedFurniture, QList<Wall> &wallList, const QList<int> &selectedWallIndices)
+    : m_furnitureList(furnitureList), m_wallList(wallList)
+{
+    for (Furniture *furniture : selectedFurniture) {
+        int index = m_furnitureList.indexOf(furniture);
+        if (index != -1) {
+            m_itemIndices.append(index);
+            m_deletedItems.append(furniture->clone());
+        }
+    }
+
+    m_wallIndices = selectedWallIndices;
+    for (int index : m_wallIndices) {
+        if (index >= 0 && index < wallList.size()) {
+            m_deletedWalls.append(wallList[index]);
+        }
+    }
+}
+
+DeleteSelectionCommand::~DeleteSelectionCommand() {
+    for (Furniture *item: m_deletedItems) {
+        delete item;
+    }
+}
+
+
+void DeleteSelectionCommand::execute() {
+    std::sort(m_itemIndices.begin(), m_itemIndices.end(), std::greater<int>());
+
+    for (int index: m_itemIndices) {
+        if (index < m_furnitureList.size()) {
+            delete m_furnitureList.takeAt(index);
+        }
+    }
+
+    std::sort(m_wallIndices.begin(), m_wallIndices.end(), std::greater<int>());
+
+    for (int index: m_wallIndices) {
+        if (index < m_wallList.size()) {
+            m_wallList.removeAt(index);
+        }
+    }
+}
+
+void DeleteSelectionCommand::undo() {
+    for (int i = m_deletedItems.size() - 1; i >= 0; --i) {
+        int originalIndex = m_itemIndices[i];
+        m_furnitureList.insert(originalIndex, m_deletedItems[i]->clone());
+    }
+
+    for (int i = m_deletedWalls.size() - 1; i >= 0; --i) {
+        int originalIndex = m_wallIndices[i];
+        m_wallList.insert(originalIndex, m_deletedWalls[i]);
+    }
+}
+
+void DeleteSelectionCommand::redo() {
+    execute();
+}
+
+
