@@ -8,7 +8,7 @@ A Qt-based application for designing house layouts with walls and furniture.
 - Add furniture (sofa, chair, table) to your layout
 - Move furniture via drag-and-drop
 - Rotate furniture
-- Select, copy, cut, and paste furniture
+- Select, copy, cut, and paste
 - Undo/redo support
 - Save and load projects
 
@@ -72,11 +72,11 @@ Select File > New and then the desired size.
 1. Click on the desired furniture tool (Sofa, Chair, or Table)
 2. Click in the design area to place the furniture
 
-### Selecting and Moving Furniture
+### Selecting and Moving
 
 1. Click the "Select" tool
-2. Click on a furniture item to select it
-3. Drag the selected item to move it
+2. Click on a furniture or a wall to select it
+3. Drag the selected furniture to move it
 4. Hold Ctrl while clicking to select multiple items
 
 ### Rotating Furniture
@@ -107,7 +107,7 @@ Select File > New and then the desired size.
 - Delete: Delete selected furniture
 - Ctrl+A: Select all
 - R: Rotate clockwise
-- Shift+R: Rotate counter-clockwise
+- Shift+R: Rotate anti-clockwise
 - Esc: Clear selection
 
 ## Project Structure
