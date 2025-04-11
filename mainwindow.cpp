@@ -23,7 +23,8 @@ MainWindow::MainWindow(QWidget *parent)
     updateStatusBar();
 
     setWindowTitle(tr("House Layout Desinger"));
-    setMinimumSize(800, 800);
+    setMinimumSize(1000, 800);
+    this->setIconSize(QSize(18, 18));
 }
 
 MainWindow::~MainWindow()
@@ -255,6 +256,30 @@ void MainWindow::setProjectModified()
     updateStatusBar();
 }
 
+
+QIcon tintIcon(const QString &iconPath, const QColor &color) {
+    QPixmap originalPixmap(iconPath);
+    if (originalPixmap.isNull())
+        return QIcon(iconPath);  // Return original if loading fails
+
+    // Create a same-sized pixmap for the colorized version
+    QPixmap coloredPixmap(originalPixmap.size());
+    coloredPixmap.fill(Qt::transparent); // Start with transparency
+
+    // Create painter for the new pixmap
+    QPainter painter(&coloredPixmap);
+
+    // Draw the original icon
+    painter.drawPixmap(0, 0, originalPixmap);
+
+    // Apply color overlay while preserving transparency
+    painter.setCompositionMode(QPainter::CompositionMode_SourceIn);
+    painter.fillRect(coloredPixmap.rect(), color);
+    painter.end();
+
+    return QIcon(coloredPixmap);
+}
+
 void MainWindow::createActions()
 {
     m_newSmallAction = new QAction(tr("New Small (300x300)"), this);
@@ -321,23 +346,28 @@ void MainWindow::createActions()
     connect(m_rotateAntiClockwiseAction, &QAction::triggered, this, &MainWindow::rotateFurnitureAntiClockwise);
 
     m_selectAction = new QAction(tr("Select"), this);
+    m_selectAction->setShortcut(tr("A"));
     m_selectAction->setCheckable(true);
     m_selectAction->setChecked(true);
     connect(m_selectAction, &QAction::triggered, this, &MainWindow::setSelectMode);
 
     m_wallAction = new QAction(tr("Draw Wall"), this);
+    m_wallAction->setShortcut(tr("W"));
     m_wallAction->setCheckable(true);
     connect(m_wallAction, &QAction::triggered, this, &MainWindow::setWallMode);
 
     m_sofaAction = new QAction(tr("Add Sofa"), this);
+    m_sofaAction->setShortcut(tr("S"));
     m_sofaAction->setCheckable(true);
     connect(m_sofaAction, &QAction::triggered, this, &MainWindow::setSofaMode);
 
     m_chairAction = new QAction(tr("Add Chair"), this);
+    m_chairAction->setShortcut(tr("C"));
     m_chairAction->setCheckable(true);
     connect(m_chairAction, &QAction::triggered, this, &MainWindow::setChairMode);
 
     m_tableAction = new QAction(tr("Add Table"), this);
+    m_tableAction->setShortcut(tr("T"));
     m_tableAction->setCheckable(true);
     connect(m_tableAction, &QAction::triggered, this, &MainWindow::setTableMode);
 
@@ -345,26 +375,25 @@ void MainWindow::createActions()
     m_rotateAction->setCheckable(true);
     connect(m_rotateAction, &QAction::triggered, this, &MainWindow::setRotateMode);
 
-    m_newSmallAction->setIcon(QIcon(":/resource/icons/new.png"));
-    m_newMediumAction->setIcon(QIcon(":/resource/icons/new.png"));
-    m_newLargeAction->setIcon(QIcon(":/resource/icons/new.png"));
-    m_openAction->setIcon(QIcon(":/resource/icons/open.png"));
-    m_saveAction->setIcon(QIcon(":/resource/icons/save.png"));
-    m_undoAction->setIcon(QIcon(":/resource/icons/undo.png"));
-    m_redoAction->setIcon(QIcon(":/resource/icons/redo.png"));
-    m_cutAction->setIcon(QIcon(":/resource/icons/cut.png"));
-    m_copyAction->setIcon(QIcon(":/resource/icons/copy.png"));
-    m_pasteAction->setIcon(QIcon(":/resource/icons/paste.png"));
-    m_deleteAction->setIcon(QIcon(":/resource/icons/delete.png"));
-    m_selectAction->setIcon(QIcon(":/resource/icons/select.png"));
-    m_wallAction->setIcon(QIcon(":/resource/icons/wall.png"));
-    m_sofaAction->setIcon(QIcon(":/resource/icons/sofa.png"));
-    m_chairAction->setIcon(QIcon(":/resource/icons/chair.png"));
-    m_tableAction->setIcon(QIcon(":/resource/icons/table.png"));
-    m_rotateAction->setIcon(QIcon(":/resource/icons/rotate.png"));
-    m_rotateClockwiseAction->setIcon(QIcon(":/resource/icons/rotate.png"));
-    m_rotateAntiClockwiseAction->setIcon(QIcon(":/resource/icons/rotate.png"));
-
+    m_newSmallAction->setIcon(tintIcon(":/resource/icons/new.png", QColor(225, 225, 225)));
+    m_newMediumAction->setIcon(tintIcon(":/resource/icons/new.png", QColor(225, 225, 225)));
+    m_newLargeAction->setIcon(tintIcon(":/resource/icons/new.png", QColor(225, 225, 225)));
+    m_openAction->setIcon(tintIcon(":/resource/icons/open.png", QColor(225, 225, 225)));
+    m_saveAction->setIcon(tintIcon(":/resource/icons/save.png", QColor(225, 225, 225)));
+    m_undoAction->setIcon(tintIcon(":/resource/icons/undo.png", QColor(225, 225, 225)));
+    m_redoAction->setIcon(tintIcon(":/resource/icons/redo.png", QColor(225, 225, 225)));
+    m_cutAction->setIcon(tintIcon(":/resource/icons/cut.png", QColor(225, 225, 225)));
+    m_copyAction->setIcon(tintIcon(":/resource/icons/copy.png", QColor(225, 225, 225)));
+    m_pasteAction->setIcon(tintIcon(":/resource/icons/paste.png", QColor(225, 225, 225)));
+    m_deleteAction->setIcon(tintIcon(":/resource/icons/delete.png", QColor(225, 225, 225)));
+    m_selectAction->setIcon(tintIcon(":/resource/icons/select.png", QColor(225, 225, 225)));
+    m_wallAction->setIcon(tintIcon(":/resource/icons/wall.png", QColor(225, 225, 225)));
+    m_sofaAction->setIcon(tintIcon(":/resource/icons/sofa.png", QColor(225, 225, 225)));
+    m_chairAction->setIcon(tintIcon(":/resource/icons/chair.png", QColor(225, 225, 225)));
+    m_tableAction->setIcon(tintIcon(":/resource/icons/table.png", QColor(225, 225, 225)));
+    m_rotateAction->setIcon(tintIcon(":/resource/icons/rotate.png", QColor(225, 225, 225)));
+    m_rotateClockwiseAction->setIcon(tintIcon(":/resource/icons/rotate.png", QColor(225, 225, 225)));
+    m_rotateAntiClockwiseAction->setIcon(tintIcon(":/resource/icons/rotate.png", QColor(225, 225, 225)));
 }
 
 void MainWindow::createMenus()
@@ -422,11 +451,14 @@ void MainWindow::createToolbars()
 
     QToolBar *toolsToolBar = addToolBar(tr("Tools"));
     toolsToolBar->addAction(m_selectAction);
+    toolsToolBar->addAction(m_rotateAction);
     toolsToolBar->addAction(m_wallAction);
     toolsToolBar->addAction(m_sofaAction);
     toolsToolBar->addAction(m_chairAction);
     toolsToolBar->addAction(m_tableAction);
-    toolsToolBar->addAction(m_rotateAction);
+
+    toolsToolBar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    toolsToolBar->setStyleSheet("QToolButton::handle { qproperty-iconColor: white; } ");
 }
 
 void MainWindow::createStatusBar()
