@@ -268,14 +268,18 @@ void DesignArea::paintEvent(QPaintEvent *event)
     for (int i = 0; i < m_project.walls().size(); ++i) {
         const Wall &wall = m_project.walls()[i];
 
-        if (m_selectedWallIndices.contains(i)) {
-            painter.setPen(QPen(Qt::cyan, 5, Qt::SolidLine, Qt::RoundCap));
-        }
-        else {
-            painter.setPen(QPen(Qt::black, 5, Qt::SolidLine, Qt::RoundCap));
-        }
-
+        painter.setPen(QPen(Qt::black, 5, Qt::SolidLine, Qt::RoundCap));
         wall.draw(painter);
+
+        if (m_selectedWallIndices.contains(i)) {
+            painter.save();
+            painter.setPen(QPen(Qt::cyan, 5, Qt::SolidLine, Qt::RoundCap));
+            wall.draw(painter);
+
+            painter.setPen(QPen(Qt::black, 3, Qt::SolidLine, Qt::RoundCap));
+            wall.draw(painter);
+            painter.restore();
+        }
     }
 
     // Draw furniture
