@@ -290,12 +290,12 @@ void DesignArea::mousePressEvent(QMouseEvent *event)
 
                 if (!checkFurnitureCollision(newItem)) {
                     m_commandManager.execute(new AddFurnitureCommand(m_project.furniture(), newItem));
+                    emit projectModified();
+                    update();
                 }
                 else {
                     delete newItem;
                 }
-
-                setToolMode(ToolMode::Select);
             }
             break;
         case ToolMode::AddSofa:
@@ -304,12 +304,12 @@ void DesignArea::mousePressEvent(QMouseEvent *event)
 
                 if (!checkFurnitureCollision(newItem)) {
                     m_commandManager.execute(new AddFurnitureCommand(m_project.furniture(), newItem));
+                    emit projectModified();
+                    update();
                 }
                 else {
                     delete newItem;
                 }
-
-                setToolMode(ToolMode::Select);
             }
             break;
         case ToolMode::AddTable:
@@ -318,12 +318,12 @@ void DesignArea::mousePressEvent(QMouseEvent *event)
 
                 if (!checkFurnitureCollision(newItem)) {
                     m_commandManager.execute(new AddFurnitureCommand(m_project.furniture(), newItem));
+                    emit projectModified();
+                    update();
                 }
                 else {
                     delete newItem;
                 }
-
-                setToolMode(ToolMode::Select);
             }
             break;
         case ToolMode::Rotate:
@@ -405,6 +405,7 @@ void DesignArea::mouseReleaseEvent(QMouseEvent *event)
 
                 Wall newWall(m_wallStartPoint, m_wallEndPoint);
                 m_commandManager.execute(new AddWallCommand(m_project.walls(), newWall));
+                emit projectModified();
             }
 
             update();
@@ -442,6 +443,7 @@ void DesignArea::mouseReleaseEvent(QMouseEvent *event)
                 }
                 else {
                     m_commandManager.execute(new MoveFurnitureCommand(m_project.furniture(), furnitureIds, m_initialPositions, currentPositions));
+                    emit projectModified();
                 }
             }
 

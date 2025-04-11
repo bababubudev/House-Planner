@@ -299,7 +299,8 @@ void Table::draw(QPainter &painter) const {
     painter.translate(m_position);
     painter.rotate(m_rotation);
 
-    QRectF rect(-m_width / 2, -m_height / 2, m_width, m_height);
+    qreal radius = qMin(m_width, m_height) / 2;
+    QRectF circleRect(-radius, -radius, 2 * radius, 2 * radius);
 
     QColor color = getColorForType();
     painter.setBrush(color);
@@ -311,12 +312,13 @@ void Table::draw(QPainter &painter) const {
         painter.setPen(QPen(Qt::black, 1, Qt::SolidLine));
     }
 
-    painter.drawRect(rect);
+    painter.drawEllipse(circleRect);
 
     // Cross to represent table
+    qreal crossHalfLength = radius * std::sqrt(2) / 2;
     painter.setPen(QPen(Qt::black, 1, Qt::DotLine));
-    painter.drawLine(QPointF(-m_width / 2, -m_height / 2), QPointF(m_width / 2, m_height / 2));
-    painter.drawLine(QPointF(-m_width / 2, m_height / 2), QPointF(m_width / 2, -m_height / 2));
+    painter.drawLine(QPointF(-crossHalfLength, -crossHalfLength), QPointF(crossHalfLength, crossHalfLength));
+    painter.drawLine(QPointF(-crossHalfLength, crossHalfLength), QPointF(crossHalfLength, -crossHalfLength));
 
     painter.restore();
 }

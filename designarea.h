@@ -44,6 +44,9 @@ public:
 
     void rotateFurniture(qreal angle);
 
+signals:
+    void projectModified();
+
 public slots:
     void newProject(Project::HouseSize size);
     void saveProject(const QString &filename);

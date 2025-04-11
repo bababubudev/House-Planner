@@ -25,6 +25,7 @@ public:
 
 signals:
     void undoRedoStateChanged();
+    void commandExecuted();
 
 private:
     QStack<Command*> m_undoStack;

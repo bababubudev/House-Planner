@@ -92,7 +92,7 @@ void MoveFurnitureCommand::execute()
     for (int i = 0; i < m_furnitureIds.size(); ++i) {
         for (Furniture *furniture : m_furnitureList) {
             if (furniture->id() == m_furnitureIds[i]) {
-                furniture->setPoistion(m_newPositions[i]);
+                furniture->setPosition(m_newPositions[i]);
                 break;
             }
         }
@@ -104,7 +104,7 @@ void MoveFurnitureCommand::undo()
     for (int i = 0; i < m_furnitureIds.size(); ++i) {
         for (Furniture *furniture : m_furnitureList) {
             if (furniture->id() == m_furnitureIds[i]) {
-                furniture->setPoistion(m_oldPositions[i]);
+                furniture->setPosition(m_oldPositions[i]);
                 break;
             }
         }

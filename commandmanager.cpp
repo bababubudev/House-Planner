@@ -20,6 +20,7 @@ void CommandManager::execute(Command *command)
     m_redoStack.clear();
 
     emit undoRedoStateChanged();
+    emit commandExecuted();
 }
 
 void CommandManager::undo()
