@@ -22,7 +22,7 @@ MainWindow::MainWindow(QWidget *parent)
     updateActions();
     updateStatusBar();
 
-    setWindowTitle(tr("House Layout Desinger"));
+    setWindowTitle(tr("House Planner"));
     setMinimumSize(1000, 800);
     this->setIconSize(QSize(18, 18));
 }
@@ -64,7 +64,7 @@ void MainWindow::newLargeProject()
 
 void MainWindow::openProject()
 {
-    QString filename = QFileDialog::getOpenFileName(this, tr("Open Project"), "", tr("House Layout Files (*.hld);;All Files (*)"));
+    QString filename = QFileDialog::getOpenFileName(this, tr("Open Project"), "", tr("House Planner Files (*.bruh);;All Files (*)"));
 
     if (filename.isEmpty()) return;
 
@@ -91,7 +91,7 @@ void MainWindow::saveProject()
 
 void MainWindow::saveProjectAs()
 {
-    QString filename = QFileDialog::getSaveFileName(this, tr("Save Project"), "", tr("House Layout Files (*.hld);;All Files (*)"));
+    QString filename = QFileDialog::getSaveFileName(this, tr("Save Project"), "", tr("House Layout Files (*.bruh);;All Files (*)"));
 
     if (filename.isEmpty()) return;
 
@@ -161,7 +161,7 @@ void MainWindow::selectAll()
 
 void MainWindow::rotateFurnitureClockwise()
 {
-    m_designArea->rotateFurniture(90);
+    m_designArea->rotateFurniture(45);
     m_projectModified = true;
 
     updateStatusBar();
@@ -169,7 +169,7 @@ void MainWindow::rotateFurnitureClockwise()
 
 void MainWindow::rotateFurnitureAntiClockwise()
 {
-    m_designArea->rotateFurniture(-90);
+    m_designArea->rotateFurniture(-45);
     m_projectModified = true;
 
     updateStatusBar();

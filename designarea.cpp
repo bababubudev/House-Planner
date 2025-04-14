@@ -419,7 +419,7 @@ void DesignArea::mousePressEvent(QMouseEvent *event)
                     }
                 }
                 else if (m_selectedFurniture.size() == 1) {
-                    rotateFurniture(90);
+                    rotateFurniture(45);
                 }
             }
             break;
@@ -600,10 +600,10 @@ void DesignArea::keyPressEvent(QKeyEvent *event)
     case Qt::Key_R:
         if (m_selectedFurniture.size() == 1) {
             if (event->modifiers() & Qt::ShiftModifier) {
-                rotateFurniture(-90);
+                rotateFurniture(-45);
             }
             else {
-                rotateFurniture(90);
+                rotateFurniture(45);
             }
         }
         break;

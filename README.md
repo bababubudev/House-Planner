@@ -1,4 +1,4 @@
-# House Layout Designer
+# House Planner
 
 A Qt-based application for designing house layouts with walls and furniture.
 
@@ -45,7 +45,7 @@ A Qt-based application for designing house layouts with walls and furniture.
 5. Run the application:
 
 ```bash
-   ./HouseLayoutDesigner
+   ./HousePlanner
 ```
 
 Alternatively, you can open the project in QtCreator by opening the `CMakeLists.txt` file and use the integrated build and run functionality.
