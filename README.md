@@ -2,6 +2,9 @@
 
 A Qt-based application for designing house layouts with walls and furniture.
 
+<img width="990" alt="Screenshot 2025-04-11 at 22 33 48" src="https://github.com/user-attachments/assets/27d0b205-e288-458a-bda3-ce5e76c609b5" />
+
+
 ## Features
 
 - Draw horizontal and vertical walls
